@@ -15,10 +15,10 @@ class HTMLNode():
         return html_atributes_str
     
     def __repr__(self) -> str:
-        return f"Class name:{self.__class__.__name__}\n \
+        return f"Class name: {self.__class__.__name__}\n \
               Tag: {self.tag} \n \
               Value: {self.value} \n \
               Children: {self.children} \n \
               Props: {self.props} \
               "
-        
+              
