@@ -6,10 +6,11 @@ class HTMLNode():
         self.props = props
     
     def to_html(self):
-        raise NotImplementedError
+        result = ""
+        raise NotImplementedError("This feacture has not been implemented")
 
     def props_to_html(self):
-        if not self.props:
+        if not self.props or self.props == None:
             return ""
         html_atributes_str = ""
         for key, value in self.props.items():
@@ -38,3 +39,18 @@ class LeafNode(HTMLNode):
         else:
             raise Exception("Something went wrong")
         
+class ParentNode(HTMLNode):
+    def __init__(self, children, tag=None, props=None):
+        super().__init__(tag=tag, children=children, props=props)
+    
+    def to_html(self):
+        result = ""
+        if self.tag == None:
+            raise ValueError("The tag cannot be None")
+        elif not self.children or self.children == None:
+            raise ValueError("The children cannot be None")
+        for leaf in self.children:
+            if hasattr(leaf, "to_html"):
+                result += leaf.to_html()
+        result = f"<{self.tag}{super().props_to_html()}>{result}</{self.tag}>"
+        return result
