@@ -19,18 +19,3 @@ def text_node_to_html_node(text_node):
         
         html_leaf_node = LeafNode(**text_type_info)
     return html_leaf_node
-    
-
-
-    #elif text_node.text_type == allowed_text_types[0]:
-    #    html_node = LeafNode(value=text_node.text)
-    #elif text_node.text_type == allowed_text_types[1]:
-    #   html_node = LeafNode(tag="b", value=text_node.text)
-    #elif text_node.text_type == allowed_text_types[2]:
-    #    html_node = LeafNode(tag="i", value=text_node.text)
-    #elif text_node.text_type == allowed_text_types[3]:
-    #    html_node = LeafNode(tag="code", value=text_node.text)
-    #elif text_node.text_type == allowed_text_types[4]:
-    #    html_node = LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
-    #elif text_node.text_type == allowed_text_types[5]:
-     #   html_node = LeafNode(tag="img", value="", props={"src": text_node.url, "alt": text_node.text})

@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode
+from textnode import TextNode, split_nodes_delimiter
 
 
 class TestTextNode(unittest.TestCase):
@@ -28,8 +28,28 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", "text", "https://www.boot.dev")
         self.assertEqual("TextNode(This is a text node, text, https://www.boot.dev)", repr(node))
         
-        
-        
+class Test_split_nodes_delimiter(unittest.TestCase):
+    def test_raise_exception(self):
+        node = TextNode(text="this is a wrong **bold statement", text_type="bold")
+                
+        with self.assertRaises(Exception):
+            split_nodes_delimiter([node], "**", "bold")
+            
+    def test_multiple_old_nodes(self):
+        node = TextNode(text="this is a **bold statement**", text_type="bold")
+        node1 = TextNode(text="this is another **bold statement** see?", text_type="bold")
+        result = split_nodes_delimiter([node, node1], "**", "bold")
+        expected = expected = [
+            TextNode("this is a ", "text"),
+            TextNode("bold statement", "bold"),
+            TextNode("this is another ", "text"),
+            TextNode("bold statement", "bold"),
+            TextNode(" see?", "text"),
+         ]
 
+        
+        self.assertEqual(result, expected)
+        
+        
 if __name__ == "__main__":
     unittest.main()
