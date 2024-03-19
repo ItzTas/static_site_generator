@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, split_nodes_delimiter
+from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link
 
 
 class TestTextNode(unittest.TestCase):
@@ -50,6 +50,51 @@ class Test_split_nodes_delimiter(unittest.TestCase):
         
         self.assertEqual(result, expected)
         
+class test_split_nodes_link_image(unittest.TestCase):
+    def test_split_nodes_image_no_image_tag(self):
+        nodes = [
+            TextNode(text="This is just a text with no image", text_type="text"),
+            TextNode(text="this is a text with a image ![image](https://test)", text_type="text")
+        ]
+        result = split_nodes_image(nodes)
+        expected = [
+            TextNode("This is just a text with no image", "text", None),
+            TextNode("this is a text with a image ", "text", None),
+            TextNode("image", "image", "https://test")
+            ]
+            
+        self.assertEqual(result, expected)
+        
+    def test_split_nodes_image(self):
+        nodes = [
+            TextNode(text="This is a text with a pretty logo ![pretty logo](https://logo)", text_type="text"),
+            TextNode(text="this is a text with a image ![image](https://test)", text_type="text")
+            ]
+        result = split_nodes_image(nodes)
+        expected = [
+            TextNode("This is a text with a pretty logo ", "text", None),
+            TextNode("pretty logo", "image", "https://logo"),
+            TextNode("this is a text with a image ", "text", None),
+            TextNode("image", "image", "https://test")
+            ]
+        
+        self.assertEqual(result, expected)
+        
+    def test_split_nodes_link(self):
+        nodes = [
+            TextNode(text="This is a text with a pretty link [pretty link](https://link)", text_type="text"),
+            TextNode(text="this is a text with a link [link](https://test)", text_type="text")
+            ]
+        
+        result = split_nodes_link(nodes)
+        expected = [
+            TextNode("This is a text with a pretty link ", "text", None),
+            TextNode("pretty link", "link", "https://link"),
+            TextNode("this is a text with a link ", "text", None),
+            TextNode("link", "link", "https://test")
+            ]
+        
+        self.assertEqual(result, expected)
         
 if __name__ == "__main__":
     unittest.main()
