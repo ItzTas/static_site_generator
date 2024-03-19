@@ -1,5 +1,7 @@
 from htmlnode import LeafNode
 
+import re
+
 
 def text_node_to_html_node(text_node):
     allowed_text_types = {"text": {}, "bold": {"tag": "b"}, "italic": {"tag": "i"}, "code": {"tag": "code"}, "link": {"tag": "a"}, "image": {"tag": "img"}}
@@ -19,3 +21,10 @@ def text_node_to_html_node(text_node):
         
         html_leaf_node = LeafNode(**text_type_info)
     return html_leaf_node
+
+
+def extract_markdown_images (text):
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+
+def extract_markdown_links (text):
+    return re.findall(r"\[(.*?)\]\((.*?)\)", text)

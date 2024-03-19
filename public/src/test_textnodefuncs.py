@@ -1,6 +1,6 @@
 import unittest
 
-from text_node_to_html_node import text_node_to_html_node
+from textnodefuncs import text_node_to_html_node, extract_markdown_images, extract_markdown_links
 
 from textnode import TextNode
 
@@ -54,6 +54,19 @@ class TestTextToHTML (unittest.TestCase):
               Props: {'src': 'https//test', 'alt': 'test'} \n \
               "
         self.assertEqual(repr(node1), expected)
+        
+class TestExtractMarkdown(unittest.TestCase):
+    def test_extract_markdown_images(self):
+        node = "this is a ![image](https://test) and this is another ![another image](https://exemple)"
+        result = extract_markdown_images(node)
+        expected = [("image", "https://test"),("another image", "https://exemple")]
+        self.assertEqual(result, expected)
+        
+    def test_extract_markdown_images(self):
+        node = "this is a [link](https://test) and this is another [another link](https://exemple)"
+        result = extract_markdown_links(node)
+        expected = [("link", "https://test"),("another link", "https://exemple")]
+        self.assertEqual(result, expected)
 
 if __name__ == "__main__":
     unittest.main()
