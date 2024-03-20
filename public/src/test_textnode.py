@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link
+from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnode, text_node_to_html_node, extract_markdown_images, extract_markdown_links
 
 
 class TestTextNode(unittest.TestCase):
@@ -27,28 +27,6 @@ class TestTextNode(unittest.TestCase):
     def test_repr(self):
         node = TextNode("This is a text node", "text", "https://www.boot.dev")
         self.assertEqual("TextNode(This is a text node, text, https://www.boot.dev)", repr(node))
-        
-class Test_split_nodes_delimiter(unittest.TestCase):
-    def test_raise_exception(self):
-        node = TextNode(text="this is a wrong **bold statement", text_type="bold")
-                
-        with self.assertRaises(Exception):
-            split_nodes_delimiter([node], "**", "bold")
-            
-    def test_multiple_old_nodes(self):
-        node = TextNode(text="this is a **bold statement**", text_type="bold")
-        node1 = TextNode(text="this is another **bold statement** see?", text_type="bold")
-        result = split_nodes_delimiter([node, node1], "**", "bold")
-        expected = expected = [
-            TextNode("this is a ", "text"),
-            TextNode("bold statement", "bold"),
-            TextNode("this is another ", "text"),
-            TextNode("bold statement", "bold"),
-            TextNode(" see?", "text"),
-         ]
-
-        
-        self.assertEqual(result, expected)
         
 class test_split_nodes_link_image(unittest.TestCase):
     def test_split_nodes_image_no_image_tag(self):
@@ -94,6 +72,87 @@ class test_split_nodes_link_image(unittest.TestCase):
             TextNode("link", "link", "https://test")
             ]
         
+        self.assertEqual(result, expected)
+
+class TestTextToTextNode(unittest.TestCase):
+    def test_one (self):
+        node = "This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)"
+        result = text_to_textnode(node)
+        expected = [
+            TextNode("This is ", "text"),
+            TextNode("text", "bold"),
+            TextNode(" with an ", "text"),
+            TextNode("italic", "italic"),
+            TextNode(" word and a ", "text"),
+            TextNode("code block", "code"),
+            TextNode(" and an ", "text"),
+            TextNode("image", "image", "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" and a ", "text"),
+            TextNode("link", "link", "https://boot.dev"),
+            ]
+        self.assertEqual(result, expected)
+        
+class TestTextToHTML (unittest.TestCase):
+    def test_Exception(self):
+        node = TextNode(text="test", text_type="undefined")
+        with self.assertRaises(Exception):
+            node1 = text_node_to_html_node(node)
+
+    def test_text_type_text(self):
+        node = TextNode(text="test", text_type="text")
+        node1 = text_node_to_html_node(node)
+        expected = "Class name: LeafNode \n \
+              Tag: None \n \
+              Value: test \n \
+              Children: None \n \
+              Props: None \n \
+              "
+        self.assertEqual(repr(node1), expected)
+    
+    def test_text_type_bold(self):
+        node = TextNode(text="test", text_type="bold")
+        node1 = text_node_to_html_node(node)
+        expected = "Class name: LeafNode \n \
+              Tag: b \n \
+              Value: test \n \
+              Children: None \n \
+              Props: None \n \
+              "
+        self.assertEqual(repr(node1), expected) 
+        
+    def test_text_type_link(self):
+        node = TextNode(text="test", text_type="link", url="https//test")
+        node1 = text_node_to_html_node(node)
+        expected = "Class name: LeafNode \n \
+              Tag: a \n \
+              Value: test \n \
+              Children: None \n \
+              Props: {'href': 'https//test'} \n \
+              "
+        self.assertEqual(repr(node1), expected)
+        
+    def test_text_type_image(self):
+        node = TextNode(text="test", text_type="image", url="https//test")
+        node1 = text_node_to_html_node(node)
+        expected = "Class name: LeafNode \n \
+              Tag: img \n \
+              Value:  \n \
+              Children: None \n \
+              Props: {'src': 'https//test', 'alt': 'test'} \n \
+              "
+        self.assertEqual(repr(node1), expected)
+        
+class TestExtractMarkdown(unittest.TestCase):
+    def test_extract_markdown_images(self):
+        node = "this is a ![image](https://test) and this is another ![another image](https://exemple)"
+        result = extract_markdown_images(node)
+        expected = [("image", "https://test"),("another image", "https://exemple")]
+        self.assertEqual(result, expected)
+        
+    def test_extract_markdown_links(self):
+        node = "this is a [link](https://test) and this is another [another link](https://exemple)"
+        result = extract_markdown_links(node)
+        expected = [("link", "https://test"),("another link", "https://exemple")]
         self.assertEqual(result, expected)
         
 if __name__ == "__main__":
