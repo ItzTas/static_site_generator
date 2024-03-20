@@ -7,6 +7,13 @@ text_type_code = "code"
 text_type_link = "link"
 text_type_image = "image"
 
+block_type_paragraph = "paragraph"
+block_type_heading = "heading"
+block_type_code = "code"
+block_type_quote = "quote"
+block_type_unordered_list = "unordered_list"
+block_type_ordered_list = "ordered_list"
+
 import re
 class TextNode:
     
@@ -142,3 +149,45 @@ def markdown_to_blocks(markdown):
             continue
         filtered_blocks.append(block.strip())
     return filtered_blocks
+
+def block_to_block_type(block):
+    count_hastag = 0
+    count_digit = 0
+    lines = block.split("\n")
+    for i in range(0, 7):
+        if i >= len(block):
+            continue
+        if block[i] != "#":
+            break
+        elif block[i] == "#":
+            count_hastag += 1
+            
+    for letter in block:
+        if letter.isdigit():
+            count_digit += 1
+        else:
+            break
+    if block.startswith("#") and count_hastag <= len(block) and block[count_hastag] == " " :
+        return block_type_heading
+    if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```") or block.startswith("``") and block.endswith("```"):
+        return block_type_code
+    if block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return block_type_paragraph
+        return block_type_quote
+    if block.startswith("* "):
+        for line in lines:
+            if not line.startswith("* "):
+                return block_type_paragraph
+        return block_type_unordered_list
+    if block.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
+                return block_type_unordered_list
+        return block_type_unordered_list
+    if block[0].isdigit() and block[count_digit] == ".":
+        return block_type_ordered_list
+    else:
+        return block_type_paragraph 
+    
