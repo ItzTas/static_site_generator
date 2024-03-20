@@ -1,6 +1,15 @@
 import unittest
 
-from textnode import TextNode, split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnode, text_node_to_html_node, extract_markdown_images, extract_markdown_links
+from textnode import (TextNode, 
+                      split_nodes_delimiter, 
+                      split_nodes_image, 
+                      split_nodes_link, 
+                      text_to_textnode, 
+                      text_node_to_html_node, 
+                      extract_markdown_images, 
+                      extract_markdown_links,
+                      markdown_to_blocks
+                      )
 
 
 class TestTextNode(unittest.TestCase):
@@ -153,6 +162,13 @@ class TestExtractMarkdown(unittest.TestCase):
         node = "this is a [link](https://test) and this is another [another link](https://exemple)"
         result = extract_markdown_links(node)
         expected = [("link", "https://test"),("another link", "https://exemple")]
+        self.assertEqual(result, expected)
+        
+class TestMarkdownToBlocks(unittest.TestCase):
+    def test_functionality(self):
+        str = "# this is a header\n\n    -item 1\n-item 2\n "
+        result = markdown_to_blocks(str)
+        expected = ["# this is a header", "-item 1\n-item 2"]
         self.assertEqual(result, expected)
         
 if __name__ == "__main__":
