@@ -250,3 +250,20 @@ def block_to_html_paragraph(block, block_type):
     if block_type != block_type_paragraph:
         raise Exception("The type of the block must be a paragraph")
     return LeafNode(tag="p", value=block)
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    html_nodes = []
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        if block_type == block_type_heading:
+            html_nodes.append(block_to_html_header(block, block_type))
+        elif block_type == block_type_code:
+            html_nodes.append(block_to_html_code(block, block_type))
+        elif block_type == block_type_ordered_list:
+            html_nodes.append(block_to_html_ol(block, block_type))
+        elif block_type == block_type_unordered_list:
+            html_nodes.append(block_to_html_ul(block, block_type))
+        elif block_type == block_type_paragraph:
+            html_nodes.append(block_to_html_paragraph(block, block_type))
+    return ParentNode(tag="div", children=html_nodes)
