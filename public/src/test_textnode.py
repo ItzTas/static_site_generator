@@ -8,7 +8,14 @@ from textnode import (TextNode,
                       text_node_to_html_node, 
                       extract_markdown_images, 
                       extract_markdown_links,
-                      markdown_to_blocks
+                      markdown_to_blocks,
+                      block_type_heading,
+                      block_type_code,
+                      block_type_paragraph,
+                      block_type_quote,
+                      block_type_ordered_list,
+                      block_type_unordered_list,
+                      block_to_block_type,
                       )
 
 
@@ -170,6 +177,44 @@ class TestMarkdownToBlocks(unittest.TestCase):
         result = markdown_to_blocks(str)
         expected = ["# this is a header", "-item 1\n-item 2"]
         self.assertEqual(result, expected)
+
+    def block_to_block_type(self):
+        block = "# heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "## heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "### heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "#### heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "##### heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "###### heading"
+        self.assertEqual(block_to_block_type(block), block_type_heading)
+        block = "####0# heading"
+        self.assertEqual(block_to_block_type(block), block_type_paragraph)
+        block = "```this is a code block```"
+        self.assertEqual(block_to_block_type(block), block_type_code)
+        block = "```\ncode\n```"
+        self.assertEqual(block_to_block_type(block), block_type_code)
+        block = "> this is a quote \n > this is another"
+        self.assertEqual(block_to_block_type(block), block_type_quote)
+        block = "> this is a quote \n this is not a quote"
+        self.assertEqual(block_to_block_type(block), block_type_paragraph)
+        block = "* this is a ul \n * this is another"
+        self.assertEqual(block_to_block_type(block), block_type_unordered_list)
+        block = "* this is a ul \n * this is not a ul"
+        self.assertEqual(block_to_block_type(block), block_type_paragraph)
+        block = "1. this is a ol \n 2. this is another"
+        self.assertEqual(block_to_block_type(block), block_type_ordered_list)
+        block = "50. this is a ol \n 51. this is another"
+        self.assertEqual(block_to_block_type(block), block_type_ordered_list)
+        block = "50 this is not a ol \n 51 this is another"
+        self.assertEqual(block_to_block_type(block), block_type_paragraph)
+        block = "50. this is a ol \n this is not"
+        self.assertEqual(block_to_block_type(block), block_type_paragraph)
+        
+        
         
 if __name__ == "__main__":
     unittest.main()

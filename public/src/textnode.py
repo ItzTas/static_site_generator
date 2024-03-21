@@ -184,10 +184,15 @@ def block_to_block_type(block):
     if block.startswith("- "):
         for line in lines:
             if not line.startswith("- "):
-                return block_type_unordered_list
+                return block_type_paragraph
         return block_type_unordered_list
     if block[0].isdigit() and block[count_digit] == ".":
+        for line in lines:
+            if not line[0].isdigit() or line[1].isdigit():
+                return block_type_paragraph
         return block_type_ordered_list
     else:
         return block_type_paragraph 
+    
+
     
