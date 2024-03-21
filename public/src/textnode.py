@@ -1,4 +1,8 @@
-from htmlnode import LeafNode
+from htmlnode import (
+                    LeafNode,
+                    HTMLNode,
+                    ParentNode
+                      )
 
 text_type_text = "text"
 text_type_bold = "bold"
@@ -194,5 +198,55 @@ def block_to_block_type(block):
     else:
         return block_type_paragraph 
     
+def block_to_html_header(block, block_type):
+    if block_type != block_type_heading:
+        raise Exception("The type of the block must be heading")
+    counter_header = 0
+    no_hastag = block.lstrip("# ")
+    for i in range(0, 6):
+        if len(block) <= i or block[i] != "#":
+            break
+        else:
+            counter_header += 1
+    return HTMLNode(tag=f"h{counter_header}", value=no_hastag)
 
-    
+def block_to_html_code(block, block_type):
+    if block_type != block_type_code:
+        raise Exception("The type of the block must be code")
+    return ParentNode(tag="pre", children=[LeafNode(tag="code", value=block.strip("```"))])
+
+def block_to_html_ul(block, block_type):
+    if block_type != block_type_unordered_list:
+        raise Exception("The type of the block must be a unordered list")
+    lis = block.split("\n")
+    list_items = []
+    for item in lis:
+        new_Leaf = LeafNode(tag="li", value=item.lstrip("*- "))
+        list_items.append(new_Leaf)
+    return ParentNode(tag="ul", children=list_items)
+
+def block_to_html_ol(block, block_type):
+    if block_type != block_type_ordered_list:
+        raise Exception("The type of the block must be a ordered list")
+    lis = block.split("\n")
+    list_items = []
+    pattern = r"^\d+\.\s"
+    for item in lis:
+        cleaned_item = re.sub(pattern, "", item)
+        new_Leaf = LeafNode(tag="li", value=cleaned_item)
+        list_items.append(new_Leaf)
+    return ParentNode(tag="ol", children=list_items)
+
+def block_to_html_quote(block, block_type):
+    if block_type != block_type_quote:
+        raise Exception("The type of the block must be a quote")
+    new_block = []
+    lines = block.split("\n")
+    for line in lines:
+        new_block.append(line.lstrip("> "))
+    return LeafNode(tag="blockquote", value="\n".join(new_block))
+
+def block_to_html_paragraph(block, block_type):
+    if block_type != block_type_paragraph:
+        raise Exception("The type of the block must be a paragraph")
+    return LeafNode(tag="p", value=block)
