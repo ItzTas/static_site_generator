@@ -6,7 +6,7 @@ from copystatic import(
 )
 
 from extract_and_generate import (
-    generate_page
+    generate_pages_recursive
 )
 
 
@@ -19,5 +19,5 @@ def combination(src_directory, dest_directory):
     print("---done---")
             
 combination(filepath_to_static, filepath_to_public)
-generate_page("/home/talinux/workspace/github.com/itzTas/static_site_generator/content/index.md", "/home/talinux/workspace/github.com/itzTas/static_site_generator/template.html", "/home/talinux/workspace/github.com/itzTas/static_site_generator/public/index.html")
+generate_pages_recursive("/home/talinux/workspace/github.com/itzTas/static_site_generator/content", "/home/talinux/workspace/github.com/itzTas/static_site_generator/template.html", "/home/talinux/workspace/github.com/itzTas/static_site_generator/public")
 
